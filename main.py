@@ -1,6 +1,7 @@
 import json
 import sys
 
+#
 from alphaNews.crawler import getCompaniesData
 from alphaNews.sentiment import sentiment
 
