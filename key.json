@@ -1,4 +1,5 @@
 {
   "sentimentApiKey": "",
-  "searchApiKey": ""
+  "searchApiKey": "",
+  "stockApiKey" : ""
 }
