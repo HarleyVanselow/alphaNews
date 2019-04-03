@@ -5,7 +5,7 @@ from azure.cognitiveservices.language.textanalytics import TextAnalyticsClient
 from msrest.authentication import CognitiveServicesCredentials
 
 
-def sentiment(texts, subscription_key):
+def sentiment(companiesData, subscription_key):
     """Sentiment.
     Scores close to 1 indicate positive sentiment, while scores close to 0 indicate negative sentiment.
     """
@@ -13,22 +13,11 @@ def sentiment(texts, subscription_key):
     client = TextAnalyticsClient(endpoint=endpoint, credentials=CognitiveServicesCredentials(subscription_key))
 
     try:
+        # documents = [company.articles for company in companiesData]
         documents = [{
             'language': 'en',
             'id': 0,
             'text': "I had the best day of my life."
-        }, {
-            'language': 'en',
-            'id': 1,
-            'text': "This was a waste of my time. The speaker put me to sleep."
-        }, {
-            'language': 'es',
-            'id': 2,
-            'text': "No tengo dinero ni nada que dar..."
-        }, {
-            'language': 'it',
-            'id': 3,
-            'text': "L'hotel veneziano era meraviglioso. È un bellissimo pezzo di architettura."
         }]
 
         for document in documents:
