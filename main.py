@@ -7,7 +7,7 @@ from alphaNews.sentiment import sentiment
 
 
 def main(companyname):
-    load = json.load(open("../key.json", 'r'))
+    load = json.load(open("key.json", 'r'))
     key = load["apiKey"]
     texts = getText(key, companyname)
     sentiment(texts, key)
