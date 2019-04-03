@@ -8,11 +8,14 @@ from alphaNews.stock import getStockPrices
 
 def main(companyname):
     load = json.load(open("key.json", 'r'))
-    key = load["apiKey"]
-    company_results = getCompaniesData(key, companyname)
-    withSentiment = sentiment(company_results, key)
-    print(withSentiment)
-    price = getStockPrices(1,2)
+    stock_api_key = load['stockApiKey']
+    sentiment_api_key = load["sentimentApiKey"]
+    search_api_key = load["searchApiKey"]
+
+    company_results = getCompaniesData(search_api_key, search_api_key)
+    with_sentiment = sentiment(company_results, sentiment_api_key)
+    print(with_sentiment)
+    price = getStockPrices('apple','2019-03-03',stock_api_key)
 
 if __name__ == "__main__":
     main(sys.argv[1])
