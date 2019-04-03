@@ -13,13 +13,16 @@ def sentiment(companiesData, subscription_key):
     client = TextAnalyticsClient(endpoint=endpoint, credentials=CognitiveServicesCredentials(subscription_key))
 
     try:
-        # documents = [company.articles for company in companiesData]
-        documents = [{
-            'language': 'en',
-            'id': 0,
-            'text': "I had the best day of my life."
-        }]
-
+        texts = [text for group in
+                 [[article['text'] for article in company['articles']] for company in companiesData['companies']] for
+                 text in group]
+        documents = []
+        for text in texts:
+            documents.append({
+                'text': text,
+                'id': hash(text),
+                'language': 'en'
+            })
         for document in documents:
             print("Asking sentiment on '{}' (id: {})".format(document['text'], document['id']))
 
@@ -29,8 +32,11 @@ def sentiment(companiesData, subscription_key):
 
         for document in response.documents:
             print("Found out that in document {}, sentiment score is {}:".format(document.id, document.score))
-
+            for company in companiesData['companies']:
+                for article in company['articles']:
+                    if str(hash(article['text'])) == document.id:
+                        print("Updating article details")
+                        article['sentiment'] = document.score
+        return companiesData
     except Exception as err:
         print("Encountered exception. {}".format(err))
-
-

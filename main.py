@@ -10,8 +10,9 @@ def main(companyname):
     load = json.load(open("key.json", 'r'))
     key = load["apiKey"]
     company_results = getCompaniesData(key, companyname)
-    sentiment(company_results, key)
+    withSentiment = sentiment(company_results, key)
+    print(withSentiment)
 
 
 if __name__ == "__main__":
-    main(sys.argv[0])
+    main(sys.argv[1])
