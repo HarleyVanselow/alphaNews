@@ -1,5 +1,4 @@
 import json
-import os
 import sys
 
 from alphaNews.crawler import getText
