@@ -39,8 +39,6 @@ def sentiment(companiesData, subscription_key):
         average = average / len(text.split('.'))
         for company in companiesData['companies']:
             for article in company['articles']:
-                print("Searching for {}, comparing with {}".format(hash(text),hash(article['text'])))
                 if str(hash(article['text'])) == str(hash(text)):
-                    print("Updating sentiment")
                     article['sentiment'] = average
     return companiesData

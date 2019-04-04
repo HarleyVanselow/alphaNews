@@ -1,3 +1,4 @@
+import time
 from datetime import datetime
 
 import requests
@@ -13,6 +14,10 @@ def getStockDeltas(companyResults, key):
             end = start + 604800
             startDate = datetime.utcfromtimestamp(start).strftime('%Y-%m-%d')
             endDate = datetime.utcfromtimestamp(end).strftime('%Y-%m-%d')
+            print("Start date: {}".format(startDate))
+            print("End date: {}".format(endDate))
+            if int(time.time()) < end :
+                continue
             while startDate not in results:
                 start -= 86400
                 startDate = datetime.utcfromtimestamp(start).strftime('%Y-%m-%d')
