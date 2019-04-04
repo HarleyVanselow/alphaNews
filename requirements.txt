@@ -2,6 +2,6 @@ azure==4.0.0
 azure-cognitiveservices-search-newssearch==1.0.0
 azure-cognitiveservices-language-textanalytics==0.2.0
 nltk==3.4
-python-dateutil==2.8.0
 beautifulsoup4
 requests
+python-dateutil

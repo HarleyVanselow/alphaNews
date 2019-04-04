@@ -5,3 +5,4 @@ pip install azure-cognitiveservices-search-websearch
 pip install boilerpipe3
 pip install azure-cognitiveservices-search-newssearch
 pip install flask
+pip install bs4

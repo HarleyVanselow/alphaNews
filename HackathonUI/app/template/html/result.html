@@ -3,41 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/result.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/result.css') }}"/>
 
 </head>
 <body>
-    <div class="container">
-        <div class="item">
-            <h2>Item Nsadasdasdasame</h2>
-            <label>description:</label>
-            <p>I went here for my birthday dinner with my family. We haven't been in a while, but I was really in the mood for good pizza, so I decided to give it a try! We got the fried seafood,…</p>
-        </div>
-        <hr>
-        <div class="item">
-            <h2>Item Name</h2>
-            <label>description:</label>
-            <p>I went here for my birthday dinner with my family. We haven't been in a while, but I was really in the mood for good pizza, so I decided to give it a try! We got the fried seafood,…</p>
-        </div>
-        <hr>
-        <div class="item">
-            <h2>Item Name</h2>
-            <label>description:</label>
-            <p>I went here for my birthday dinner with my family. We haven't been in a while, but I was really in the mood for good pizza, so I decided to give it a try! We got the fried seafood,…</p>
-        </div>
-        <hr>
-        <div class="item">
-            <h2>Item Name</h2>
-            <label>description:</label>
-            <p>I went here for my birthday dinner with my family. We haven't been in a while, but I was really in the mood for good pizza, so I decided to give it a try! We got the fried seafood,…</p>
-        </div>
-        <hr>
-        <div class="item">
-            <h2>Item Name</h2>
-            <label>description:</label>
-            <p>I went here for my birthday dinner with my family. We haven't been in a while, but I was really in the mood for good pizza, so I decided to give it a try! We got the fried seafood,…</p>
-        </div>
+<div class="container">
+    <div>{{results['topic']}}</div>
+    {% for company in results['companies'] %}
+    <div class="item">
+        <h2>{{company['name']}}</h2>
+        <table>
+            <tr>
+                <th>Date</th>
+                <th>Sentiment</th>
+                <th>Stock Open</th>
+                <th>Stock Close</th>
+                <th>Stock Percent Change</th>
+            </tr>
+        {% for article in company['articles'] %}
+            <tr>
+                <td>{{article['date']}}</td>
+                <td>{{article['sentiment']}}</td>
+                <td>{{article['open']}}</td>
+                <td>{{article['close']}}</td>
+                <td>Coming soon</td>
+            </tr>
+        {% endfor %}
+        </table>
     </div>
+    {% endfor %}
+</div>
 
 </body>
 </html>

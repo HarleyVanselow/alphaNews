@@ -3,9 +3,9 @@ from datetime import datetime
 import requests
 
 
-def getStockDeltas(companyResults):
+def getStockDeltas(companyResults, key):
     for company in companyResults['companies']:
-        results = getCompanyStockData(company['name'])
+        results = getCompanyStockData(company['name'], key)
         if len(results) == 0: return companyResults
         # Consider 1 week
         for article in company['articles']:
@@ -24,20 +24,20 @@ def getStockDeltas(companyResults):
     return companyResults
 
 
-def getCompanyStockData(company):
-    symbol = getSymbol(company)
+def getCompanyStockData(company, key):
+    symbol = getSymbol(company, key)
     if symbol is None: return []
     print("Getting stock data for " + symbol)
     r = requests.get(
-        "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" + symbol + "&outputsize=full&apikey=5UY2LSENTP9DQQP8")
+        "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" + symbol + "&outputsize=full&apikey=" + key)
     results = r.json()["Time Series (Daily)"]
     return results
 
 
-def getSymbol(company):
+def getSymbol(company, key):
     print("Getting symbol for " + company)
     r = requests.get(
-        "https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=" + company + "&apikey=5UY2LSENTP9DQQP8")
+        "https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=" + company + "&apikey=" + key)
     matches = r.json()["bestMatches"]
     if len(matches) == 0: return None
     symbol = matches[0]["1. symbol"]
