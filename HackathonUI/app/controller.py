@@ -15,8 +15,10 @@ def home_page():
 @app.route('/result')
 def search_result():
     query = request.args.get('query')
+    print(query)
     results = searchTopic(query)
-    return render_template('result.html', title='Home', query=results)
+    print(results)
+    return render_template('result.html', title='Home', results=results)
 
 
 if __name__ == '__main__':
