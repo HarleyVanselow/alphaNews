@@ -10,9 +10,10 @@ def searchTopic(topic):
     sentiment_api_key = load["sentimentApiKey"]
     search_api_key = load["searchApiKey"]
     stock_api_key = load["stockApiKey"]
+    entity_api_key = load["entityApiKey"]
 
-    company_results = getCompaniesData(search_api_key, topic)
-    with_sentiment = sentiment(company_results, sentiment_api_key)
+    company_results = getCompaniesData(search_api_key,entity_api_key, topic)
+    with_sentiment = sentiment(company_results, entity_api_key)
     print(with_sentiment)
     with_stocks = getStockDeltas(with_sentiment, stock_api_key)
 
