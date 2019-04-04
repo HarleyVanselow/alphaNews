@@ -1,23 +1,31 @@
 from azure.cognitiveservices.search.newssearch import NewsSearchAPI
 from msrest.authentication import CognitiveServicesCredentials
 import requests
+import json
+import re
 from bs4 import BeautifulSoup
 from bs4.element import Comment
 
-
-def getCompaniesData(apiKey, searchPhrase):
+def getCompaniesData(apiKey, textAnalyticsApiKey, searchPhrase):
 
     result = {'topic': searchPhrase,
               'companies': []}
 
-    company = {'name': searchPhrase,
-               'articles': []}
-
-    result['companies'].append(company)
-
     for article in search(apiKey, searchPhrase):
-        company['articles'].append(article)
+        documents = []
+        for chunk in chunks(article['text'], 5000):
+            documents.append(formatDocument(chunk))
 
+        entities = getEntities({'documents': documents}, textAnalyticsApiKey)
+
+        for document in entities['documents']:
+            for entity in document['entities']:
+                if entity['type'] == 'Organization':
+                    result['companies'].append(
+                        {
+                            'name': entity['name'],
+                            'articles': [article]
+                        })
 
     return result
 
@@ -35,11 +43,28 @@ def getCompaniesData(apiKey, searchPhrase):
     #           ]}
     # return result
 
+def getEntities(documents, apiKey):
+    endpoint = "https://canadacentral.api.cognitive.microsoft.com/text/analytics/v2.1-preview/entities"
+    headers = {'Ocp-Apim-Subscription-Key': apiKey, 'Content-Type': 'application/json'}
+    response = requests.post(endpoint, json=documents, headers=headers)
 
+    documents = json.loads(response.text)
+    return documents
+
+def formatDocument(document):
+    return {
+        "language": "en",
+        "id": hash(document),
+        "text": re.sub(' +', ' ', document)
+    }
+
+def chunks(s, n):
+    for start in range(0, len(s), n):
+        yield s[start:start + n]
 
 def search(apiKey, searchPhrase):
     client = NewsSearchAPI(CognitiveServicesCredentials(apiKey))
-    news_result = client.news.search(query=searchPhrase, freshness='Week', market="en-us", count=15)
+    news_result = client.news.search(query=searchPhrase, freshness='Week', market="en-us", count=10)
 
     if news_result.value:
         for article in news_result.value:
