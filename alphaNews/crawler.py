@@ -3,7 +3,7 @@ from msrest.authentication import CognitiveServicesCredentials
 import requests
 from bs4 import BeautifulSoup
 from bs4.element import Comment
-
+import dateutil.parser as dp
 
 def getCompaniesData(apiKey, searchPhrase):
 
@@ -43,9 +43,13 @@ def search(apiKey, searchPhrase):
 
     if news_result.value:
         for article in news_result.value:
+
+            parsed_t = dp.parse(article.date_published)
+
             yield {
                 'url': article.url,
                 'date_published': article.date_published,
+                'date': int(parsed_t.timestamp()),
                 'text': getText(article.url)
             }
 

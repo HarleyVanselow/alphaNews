@@ -11,7 +11,6 @@ search_key = os.environ['AZURE_SEARCH_KEY']
 def main():
     try:
         result = getCompaniesData(search_key, 'medical robotics')
-
         pprint(result)
 
 
