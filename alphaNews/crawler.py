@@ -1,51 +1,78 @@
 from azure.cognitiveservices.search.newssearch import NewsSearchAPI
 from msrest.authentication import CognitiveServicesCredentials
-# from boilerpipe.extract import Extractor
-
 import requests
-import urllib.request
+from bs4 import BeautifulSoup
+from bs4.element import Comment
 
 
-def getCompaniesData(key, topic):
-    result = {'topic': topic,
-              'companies': [
-                  {'name': 'Samsung',
-                   'articles': [{'date': 1104537600, 'text': "Some text is good!"},
-                                {'date': 1453420800, 'text': "Some text is bad!"}
-                                ]
-                   },
-                  {
-                      'name': 'Disney',
-                      'articles': [{'date': 1453420800, 'text': "Evil corp"}]
-                  }
-              ]}
+def getCompaniesData(apiKey, searchPhrase):
+
+    result = {'topic': searchPhrase,
+              'companies': []}
+
+    company = {'name': searchPhrase,
+               'articles': []}
+
+    result['companies'].append(company)
+
+    for article in search(apiKey, searchPhrase):
+        company['articles'].append(article)
+
+
     return result
 
+    # result = {'topic': topic,
+    #           'companies': [
+    #               {'name': 'Samsung',
+    #                'articles': [{'date': 1104537600, 'text': "Some text is good!"},
+    #                             {'date': 1453420800, 'text': "Some text is bad!"}
+    #                             ]
+    #                },
+    #               {
+    #                   'name': 'Disney',
+    #                   'articles': [{'date': 1453420800, 'text': "Evil corp"}]
+    #               }
+    #           ]}
+    # return result
 
-# def primarySearch(searchPhrase, key):
-#     listOfUrls = queryBing(searchPhrase, key);
-#
-#     listOfDocumentText = []
-#
-#     for url in listOfUrls:
-#         response = requests.get(url)
-#         extractor = Extractor(extractor='ArticleExtractor', html=response.text)
-#         listOfDocumentText.append(extractor.getText())
-#
-#     return listOfDocumentText
-#
-#
-# def queryBing(searchPhrase, key):
-#     client = NewsSearchAPI(CognitiveServicesCredentials(key))
-#     news_data = client.news.search(query=searchPhrase, market="en-us", count=10)
-#     list = []
-#
-#     if hasattr(news_data, 'value'):
-#
-#         print("\r\nWebpage Results#{}".format(len(news_data.value)))
-#         for page in news_data.value:
-#             list.append(page.url)
-#
-#     else:
-#         print("Didn't find any web pages...")
-#     return list
+
+
+def search(apiKey, searchPhrase):
+    client = NewsSearchAPI(CognitiveServicesCredentials(apiKey))
+    news_result = client.news.search(query=searchPhrase, freshness='Week', market="en-us", count=15)
+
+    if news_result.value:
+        for article in news_result.value:
+            yield {
+                'url': article.url,
+                'date_published': article.date_published,
+                'text': getText(article.url)
+            }
+
+
+def tag_visible(element):
+    if element.parent.name in ['style', 'script', 'head', 'title', 'meta', '[document]']:
+        return False
+    if isinstance(element, Comment):
+        return False
+    return True
+
+
+def text_from_html(body):
+    soup = BeautifulSoup(body, 'html.parser')
+    texts = soup.findAll(text=True)
+    visible_texts = filter(tag_visible, texts)
+    return u" ".join(t.strip() for t in visible_texts)
+
+
+def getText(url):
+    try:
+        response = requests.get(url)
+        soup = BeautifulSoup(response.text, 'html.parser')
+
+        texts = soup.findAll(text=True)
+        visible_texts = filter(tag_visible, texts)
+        return u" ".join(t.strip() for t in visible_texts)
+
+    except KeyboardInterrupt:
+        return ''
