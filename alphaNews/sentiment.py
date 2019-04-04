@@ -3,6 +3,7 @@ import json
 
 from azure.cognitiveservices.language.textanalytics import TextAnalyticsClient
 from msrest.authentication import CognitiveServicesCredentials
+import re
 
 
 def sentiment(companiesData, subscription_key):
@@ -12,31 +13,34 @@ def sentiment(companiesData, subscription_key):
     endpoint = "https://australiaeast.api.cognitive.microsoft.com"
     client = TextAnalyticsClient(endpoint=endpoint, credentials=CognitiveServicesCredentials(subscription_key))
 
-    try:
-        texts = [text for group in
-                 [[article['text'] for article in company['articles']] for company in companiesData['companies']] for
-                 text in group]
-        documents = []
-        for text in texts:
-            documents.append({
-                'text': text,
-                'id': hash(text),
-                'language': 'en'
-            })
-        for document in documents:
-            print("Asking sentiment on '{}' (id: {})".format(document['text'], document['id']))
-
-        response = client.sentiment(
-            documents=documents
-        )
-
-        for document in response.documents:
-            print("Found out that in document {}, sentiment score is {}:".format(document.id, document.score))
-            for company in companiesData['companies']:
-                for article in company['articles']:
-                    if str(hash(article['text'])) == document.id:
-                        print("Updating article details")
-                        article['sentiment'] = document.score
-        return companiesData
-    except Exception as err:
-        print("Encountered exception. {}".format(err))
+    texts = [text for group in
+             [[article['text'] for article in company['articles']] for company in companiesData['companies']] for
+             text in group]
+    for text in texts:
+        average = 0
+        toAnalyze = []
+        for sentence in text.split('.'):
+            if 10 < len(sentence) < 5000:
+                sentence = re.sub(' +', ' ', sentence)
+                toAnalyze.append({
+                    'text': sentence,
+                    'id': hash(sentence),
+                    'language': 'en'
+                })
+        print("Scanning {} sentences".format(len(toAnalyze)))
+        try:
+            response = client.sentiment(documents=toAnalyze)
+        except Exception as err:
+            print(err)
+        for result in response.documents:
+            score = result.score
+            if score > .65 or score < .35:
+                average += score
+        average = average / len(text.split('.'))
+        for company in companiesData['companies']:
+            for article in company['articles']:
+                print("Searching for {}, comparing with {}".format(hash(text),hash(article['text'])))
+                if str(hash(article['text'])) == str(hash(text)):
+                    print("Updating sentiment")
+                    article['sentiment'] = average
+    return companiesData
