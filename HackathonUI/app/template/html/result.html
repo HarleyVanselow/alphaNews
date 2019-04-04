@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/result.css') }}"/>
-
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
 </head>
 <body>
 <div class="container">
@@ -27,6 +28,11 @@
                 <td>{{article['open']}}</td>
                 <td>{{article['close']}}</td>
                 <td>Coming soon</td>
+                {% if {{article['sentiment']}} >0.5 %}
+                    <td><i class="material-icons">thumb_up</i></td>
+                {% else %}
+                    <td><i class="material-icons">thumb_down</i></td>
+                {% endif %}
             </tr>
         {% endfor %}
         </table>

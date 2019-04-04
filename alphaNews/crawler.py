@@ -5,9 +5,9 @@ import json
 import re
 from bs4 import BeautifulSoup
 from bs4.element import Comment
-import dateutil.parser as dp
-
-def getCompaniesData(apiKey, searchPhrase):
+# import dateutil.parser as dp
+#
+# def getCompaniesData(apiKey, searchPhrase):
 
 def getCompaniesData(apiKey, textAnalyticsApiKey, searchPhrase):
 
