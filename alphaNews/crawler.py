@@ -7,10 +7,8 @@ from bs4 import BeautifulSoup
 from bs4.element import Comment
 import dateutil.parser as dp
 
-def getCompaniesData(apiKey, searchPhrase):
 
 def getCompaniesData(apiKey, textAnalyticsApiKey, searchPhrase):
-
     result = {'topic': searchPhrase,
               'companies': []}
 
@@ -18,9 +16,7 @@ def getCompaniesData(apiKey, textAnalyticsApiKey, searchPhrase):
         documents = []
         for chunk in chunks(article['text'], 5000):
             documents.append(formatDocument(chunk))
-
         entities = getEntities({'documents': documents}, textAnalyticsApiKey)
-
         for document in entities['documents']:
             for entity in document['entities']:
                 if entity['type'] == 'Organization':
@@ -46,6 +42,7 @@ def getCompaniesData(apiKey, textAnalyticsApiKey, searchPhrase):
     #           ]}
     # return result
 
+
 def getEntities(documents, apiKey):
     endpoint = "https://canadacentral.api.cognitive.microsoft.com/text/analytics/v2.1-preview/entities"
     headers = {'Ocp-Apim-Subscription-Key': apiKey, 'Content-Type': 'application/json'}
@@ -54,6 +51,7 @@ def getEntities(documents, apiKey):
     documents = json.loads(response.text)
     return documents
 
+
 def formatDocument(document):
     return {
         "language": "en",
@@ -61,9 +59,11 @@ def formatDocument(document):
         "text": re.sub(' +', ' ', document)
     }
 
+
 def chunks(s, n):
     for start in range(0, len(s), n):
         yield s[start:start + n]
+
 
 def search(apiKey, searchPhrase):
     client = NewsSearchAPI(CognitiveServicesCredentials(apiKey))
@@ -71,7 +71,6 @@ def search(apiKey, searchPhrase):
 
     if news_result.value:
         for article in news_result.value:
-
             parsed_t = dp.parse(article.date_published)
 
             yield {

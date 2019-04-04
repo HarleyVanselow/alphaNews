@@ -12,12 +12,12 @@ def getStockDeltas(companyResults, key):
         for article in company['articles']:
             start = article['date']
             end = start + 604800
+            if int(time.time()) < end :
+                end = int(time.time())
             startDate = datetime.utcfromtimestamp(start).strftime('%Y-%m-%d')
             endDate = datetime.utcfromtimestamp(end).strftime('%Y-%m-%d')
             print("Start date: {}".format(startDate))
             print("End date: {}".format(endDate))
-            if int(time.time()) < end :
-                continue
             while startDate not in results:
                 start -= 86400
                 startDate = datetime.utcfromtimestamp(start).strftime('%Y-%m-%d')
@@ -43,7 +43,12 @@ def getSymbol(company, key):
     print("Getting symbol for " + company)
     r = requests.get(
         "https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=" + company + "&apikey=" + key)
+    print("Got here")
     matches = r.json()["bestMatches"]
-    if len(matches) == 0: return None
+
+    if len(matches) == 0:
+        print("No symbol found for "+company)
+        return None
     symbol = matches[0]["1. symbol"]
+    print("Found symbol "+symbol)
     return symbol

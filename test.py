@@ -8,4 +8,5 @@ search_api_key = load["searchApiKey"]
 stock_api_key = load["stockApiKey"]
 
 assert getSymbol("Microsoft", stock_api_key) == "MSFT"
-assert getSymbol("Wack Not a Company", stock_api_key) is None
+# assert getSymbol("Wack Not a Company", stock_api_key) is None
+# print(getSymbol("Microsoft",stock_api_key))
